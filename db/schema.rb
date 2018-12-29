@@ -21,8 +21,9 @@ ActiveRecord::Schema.define(version: 2018_12_29_225854) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "users", force: :cascade do |t|
-    t.string "slack_user_id"
+  create_table "intakes", force: :cascade do |t|
+    t.string "user_id"
+    t.integer "flavor_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

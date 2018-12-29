@@ -1,6 +1,8 @@
 class IntakesController < ApplicationController
   def index
-    "Get Yo' Drink On"
+    @intakes = Intake.all
+
+    render @intakes.to_json
   end
 
   def create
