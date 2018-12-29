@@ -1,4 +1,3 @@
 Rails.application.routes.draw do
-
-  resources :intakes, only: [:create]
+  resources :intakes, only: [:index, :create]
 end
