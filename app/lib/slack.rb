@@ -17,12 +17,16 @@ class Slack
 
     # format attachments
     if !@actions.empty?
-      @attachments = [{
-        color: '#3AA3E3',
-        text: @action_text,
-        callback_id: 'lacroix',
-        actions: @actions
-      }]
+      attachments = []
+      @actions.each_slice(5) do |a|
+        attachments << {
+          color: '#3AA3E3',
+          text: '',
+          callback_id: 'lacroix',
+          actions: a
+        }
+      end
+      @attachments = attachments
     end
 
   end
