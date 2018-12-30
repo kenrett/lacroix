@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
-  root to: 'intakes#index'
+  root to: 'messages#index'
 
-  resources :intakes, only: [:index, :create]
+  resources :intakes, only: [:create]
   post '/message' => 'messages#index'
 end
