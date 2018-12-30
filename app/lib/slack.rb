@@ -11,30 +11,50 @@ class Slack
     # Default Slack channel based on environment.
     @webhook = opts.fetch(:webhook, WEBHOOK_LA_CROIX_TEST)
     @text = opts.fetch(:text, 'Testing!')
-    @attachments = opts.fetch(:attachments, [])
+    @action_text = opts.fetch(:action_text, 'Choose an action')
+    @actions = opts.fetch(:actions, [])
     @callback_id = opts.fetch(:callback_id, 'lacroix')
+
+    # format attachments
+    if !@actions.empty?
+      @attachments = [{
+        color: '#3AA3E3',
+        text: @action_text,
+        callback_id: 'lacroix',
+        actions: @actions
+      }]
+    end
+
+  end
+
+  # return the args formatted for sending to Slack
+  def get_slack_args
+
+    {
+      text: @text,
+      attachments: @attachments
+    }
+
+  end
+
+  # post the message directly to the Slack API
+  def post_message
+    params = {
+      text: @text,
+    }
+    params[:attachments] = @attachments if !@attachments.empty?
+    params = params.to_json
 
     #setup Faraday connection to call Slack API
     #TODO don't hard code an incoming webhook here, use OAuth app distrubtion
-    @request = Faraday.new(:url => 'https://hooks.slack.com/services/T04GF0BAF/') do |c|
+    request = Faraday.new(:url => 'https://hooks.slack.com/services/T04GF0BAF/') do |c|
       #c.request  :json
       c.response :logger                  # log requests to STDOUT
       #c.response :json                  # form response as JSON (otherwise it will be a string)
       c.adapter  Faraday.default_adapter  # make requests with Net::HTTP
     end
 
-  end
-
-  def post_message
-    params = {
-      text: @text,
-    }
-
-    params[:attachments] = @attachments if !@attachments.empty?
-
-    params = params.to_json
-
-    @request.post do |req|
+    request.post do |req|
       req.url @webhook
       req.headers['Content-Type'] = 'application/json'
       req.body = params
