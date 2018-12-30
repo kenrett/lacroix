@@ -11,6 +11,7 @@ class IntakesController < ApplicationController
 
   def intake_params
     p "*" * 200
+    p "actions: #{params['payload']['actions']}"
     p "user_id: #{params['payload']['user']['id']}"
     p "flavor_id: #{params['payload']['actions'][0]['value']}"
     p "*" * 200
