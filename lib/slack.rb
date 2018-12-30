@@ -1,3 +1,6 @@
+require 'faraday'
+require 'json'
+
 class Slack
 
   attr_accessor :request, :channel, :text, :username, :icon_url, :params, :attachments
@@ -11,12 +14,13 @@ class Slack
     @webhook = opts.fetch(:webhook, WEBHOOK_LA_CROIX_TEST)
     @text = opts.fetch(:text, 'Testing!')
     @attachments = opts.fetch(:attachments, [])
+    @callback_id = opts.fetch(:callback_id, 'lacroix')
 
     #setup Faraday connection to call Slack API
     #TODO don't hard code an incoming webhook here, use OAuth app distrubtion
     @request = Faraday.new(:url => 'https://hooks.slack.com/services/T04GF0BAF/') do |c|
-      c.request  :json
-      #c.response :logger                  # log requests to STDOUT
+      #c.request  :json
+      c.response :logger                  # log requests to STDOUT
       #c.response :json                  # form response as JSON (otherwise it will be a string)
       c.adapter  Faraday.default_adapter  # make requests with Net::HTTP
     end
@@ -31,6 +35,8 @@ class Slack
 
     params[:attachments] = @attachments if !@attachments.empty?
 
+    params = params.to_json
+
     @request.post do |req|
       req.url @webhook
       req.headers['Content-Type'] = 'application/json'
@@ -40,3 +46,33 @@ class Slack
   end
 
 end
+
+actions = [
+  {
+      name: "flavor",
+      text: ":peach:",
+      type: "button",
+      value: 1
+  },
+  {
+    name: "flavor",
+    text: ":pear:",
+    type: "button",
+    value: 2
+  },
+]
+
+attachments = [{
+  color: "#3AA3E3",
+  text: "Choose a flava",
+  callback_id: 'lacroix',
+  actions: actions
+}]
+
+args = {
+  text: "Record your La Croix intake, yo",
+  attachments: attachments
+}
+
+slack_message = Slack.new(args)
+slack_message.post_message
