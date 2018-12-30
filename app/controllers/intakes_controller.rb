@@ -6,6 +6,7 @@ class IntakesController < ApplicationController
   end
 
   def create
+    binding.pry
     Intake.create(params)
   end
 

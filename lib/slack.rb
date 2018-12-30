@@ -2,14 +2,12 @@ require 'faraday'
 require 'json'
 
 class Slack
-
   attr_accessor :request, :channel, :text, :username, :icon_url, :params, :attachments
 
   # TODO don't hard code an incoming webhook here, use OAuth app distrubtion
   WEBHOOK_LA_CROIX_TEST = "BF5154EG6/RT62CQWxF76gBxU21kmCxIcX" #la-croix-testin channel
 
   def initialize(opts = {})
-
     # Default Slack channel based on environment.
     @webhook = opts.fetch(:webhook, WEBHOOK_LA_CROIX_TEST)
     @text = opts.fetch(:text, 'Testing!')
@@ -28,7 +26,6 @@ class Slack
   end
 
   def post_message
-
     params = {
       text: @text,
     }
@@ -42,37 +39,5 @@ class Slack
       req.headers['Content-Type'] = 'application/json'
       req.body = params
     end
-
   end
-
 end
-
-actions = [
-  {
-      name: "flavor",
-      text: ":peach:",
-      type: "button",
-      value: 1
-  },
-  {
-    name: "flavor",
-    text: ":pear:",
-    type: "button",
-    value: 2
-  },
-]
-
-attachments = [{
-  color: "#3AA3E3",
-  text: "Choose a flava",
-  callback_id: 'lacroix',
-  actions: actions
-}]
-
-args = {
-  text: "Record your La Croix intake, yo",
-  attachments: attachments
-}
-
-slack_message = Slack.new(args)
-slack_message.post_message
