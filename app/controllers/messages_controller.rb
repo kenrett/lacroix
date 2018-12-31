@@ -13,8 +13,9 @@ class MessagesController < ApplicationController
     }
 
     slack_message = ::Slack.new(args)
-    thing = slack_message.get_slack_args
-    render json: thing.to_json, status: 200
+    slack_args = slack_message.get_slack_args
+
+    render json: slack_args.to_json, status: 200
   end
 
   private

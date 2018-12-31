@@ -11,7 +11,6 @@ gem 'faraday', '>= 0.15.4'
 gem 'pry-byebug'
 
 group :development, :test do
-  gem 'pp'
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
 end
 
