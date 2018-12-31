@@ -3,4 +3,6 @@ Rails.application.routes.draw do
 
   resources :intakes, only: [:create]
   post '/message' => 'messages#index'
+  get '/provision' => 'provisions#index'
+  get '/auth' => 'auths#index'
 end
