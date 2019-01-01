@@ -2,20 +2,20 @@
 Flavor.destroy_all
 
 flavors = {
-  'pure' => ':droplet:',
-  'lime' => 'lime',
-  'lemon' => ':lemon:',
-  'orange' => 'orange',
-  'berry' => 'berry',
-  'cran-raspberry' => 'cran-rasberry',
-  'pamplemousse' => ':fr:',
-  'peach-pear' => ':poop:',
-  'coconut' => ':coconut:',
-  'apricot' => 'apricot',
-  'passionfruit' => 'passionfruit',
-  'mango' => 'mango',
-  'tangerine' => ':tangerine:',
-  'key lime' => 'key lime'
+  'pure' => ':la-pure:',
+  'lime' => ':la-lime:',
+  'lemon' => ':la-lemon:',
+  'orange' => ':la-orange:',
+  'berry' => ':la-berry:',
+  'cran-raspberry' => ':la-cran-rasberry:',
+  'pamplemousse' => ':la-pamplemousse:',
+  'peach-pear' => ':la-peach-pear:',
+  'coconut' => ':la-coconut:',
+  'apricot' => ':la-apricot:',
+  'passionfruit' => ':la-passionfruit:',
+  'mango' => ':la-mango:',
+  'tangerine' => ':la-tangerine:',
+  'key lime' => ':la-key-lime:'
 }
 
 flavors.each do |name, emoji|
