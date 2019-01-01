@@ -29,7 +29,7 @@ class AuthsController < ApplicationController
 
     # Great, we got a response back, let's make it is valid
     if response.status != 200
-      raise ActionController::RoutingError.new('Received error from Slack')
+      raise ActionController::RoutingError.new("Error! Received a #{response.status} during OAuth.")
     end
 
     # Now parse the response and store the details
