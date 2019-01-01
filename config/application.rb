@@ -32,5 +32,10 @@ module Lacroix
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    # Slack App client ID and secret for oauth
+    config.app_client_id = '4559011355.513032508945'
+    config.app_client_secret = ENV["SLACK_LACROIX_BOT_CLIENT_SECRET"]
+    config.app_id = 'AF30YEYTT'
   end
 end
