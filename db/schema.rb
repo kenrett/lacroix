@@ -10,10 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_30_012401) do
+ActiveRecord::Schema.define(version: 2018_12_31_232230) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "auths", primary_key: ["user_id", "team_id"], force: :cascade do |t|
+    t.string "user_id", null: false
+    t.string "team_id", null: false
+    t.string "access_token"
+    t.string "scope"
+    t.string "bot_user_id"
+    t.string "bot_access_token"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["team_id"], name: "index_auths_on_team_id"
+  end
 
   create_table "flavors", force: :cascade do |t|
     t.string "name"
