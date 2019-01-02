@@ -1,26 +1,5 @@
-# README
+<img src="https://github.com/kenrett/lacroix/blob/master/public/lacroixface.png" width="250" height="325" />
 
-La Croix is amazing
+## La Croix is amazing. 
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+#### Now there is finally a slackbot to enable you to more simply track your intake!
