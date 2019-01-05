@@ -17,14 +17,15 @@ class MessagesController < ApplicationController
     p params['text']
     p "*" * 100
     case params['text'].to_s.downcase.strip
-    when 'help', '' then HELP_RESPONSE
+    when 'help', then render_to_slack(text: HELP_RESPONSE)
+      help_instructions
     when 'add'
       record_a_drink
     when 'today'
     when 'week'
     when 'alltime'
     when 'hero'
-    else INVALID_RESPONSE
+    else render_to_slack(text: INVALID_RESPONSE)
     end
 
 
