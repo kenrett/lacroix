@@ -9,24 +9,20 @@ class MessagesController < ApplicationController
     Example: `/lacroix add`
   HELP
   INVALID_RESPONSE = <<~INVALID.freeze
-    Sorry, I didn’t quite get that. You can try `add`, `help`, `today`, `week`, `alltime`, or `hero`'
+    Sorry, I didn’t quite get that. You can try `add`, `help`, `today`, `week`, `alltime`, or `hero`
   INVALID
 
   def index
-    p "*" * 100
-    p params['text']
-    p "*" * 100
+    @user_id = params['user_id']
     case params['text'].to_s.downcase.strip
     when 'help' then render_to_slack(text: HELP_RESPONSE)
     when 'add' then record_a_drink
-    when 'today'
-    when 'week'
-    when 'alltime'
-    when 'hero'
+    when 'today' then today_stats
+    when 'week' then week_stats
+    when 'alltime' then alltime_stats
+    when 'hero' then leaderboard
     else render_to_slack(text: INVALID_RESPONSE)
     end
-
-
   end
 
   private
@@ -51,6 +47,34 @@ class MessagesController < ApplicationController
     }
 
     render_to_slack(args)
+  end
+
+  def today_stats
+    count = Intake.where(user_id: @user_id).today.count
+    text = <<~TODAY
+      You have had #{count} #{'LaCroix'.pluralize(count)} today.
+    TODAY
+    render_to_slack(text: text)
+  end
+
+  def week_stats
+    count = Intake.where(user_id: @user_id).this_week.count
+    text = <<~WEEK
+      You have had #{count} #{'LaCroix'.pluralize(count)} this week.
+    WEEK
+    render_to_slack(text: text)
+  end
+
+  def alltime_stats
+    count = Intake.where(user_id: @user_id).count
+    text = <<~ALLTIME
+      You have had #{count} #{'LaCroix'.pluralize(count)} since you started tracking.
+    ALLTIME
+    render_to_slack(text: text)
+  end
+
+  def leaderboard
+    # TODO
   end
 
   def render_to_slack(args)
