@@ -74,7 +74,7 @@ class MessagesController < ApplicationController
   end
 
   def leaderboard
-    # TODO
+    render_to_slack(text: 'This has not been implemented yet.')
   end
 
   def render_to_slack(args)
