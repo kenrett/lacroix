@@ -16,7 +16,7 @@ class Slack
     @callback_id = opts.fetch(:callback_id, 'lacroix')
 
     # format attachments
-    if !@actions.empty?
+    if @actions.any?
       attachments = []
       @actions.each_slice(5) do |a|
         attachments << {
@@ -33,12 +33,10 @@ class Slack
 
   # return the args formatted for sending to Slack
   def get_slack_args
-
     {
       text: @text,
       attachments: @attachments
     }
-
   end
 
   # post the message directly to the Slack API
@@ -54,7 +52,7 @@ class Slack
     request = Faraday.new(:url => 'https://hooks.slack.com/services/T04GF0BAF/') do |c|
       #c.request  :json
       c.response :logger                  # log requests to STDOUT
-      #c.response :json                  # form response as JSON (otherwise it will be a string)
+      #c.response :json                   # form response as JSON (otherwise it will be a string)
       c.adapter  Faraday.default_adapter  # make requests with Net::HTTP
     end
 

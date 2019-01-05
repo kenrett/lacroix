@@ -4,7 +4,7 @@ class IntakesController < ApplicationController
       user_id: intake_params[:user][:id],
       flavor_id: intake_params[:actions][0][:value]
     )
-    show_stats
+    show_todays_stats
   end
 
   private
@@ -30,9 +30,21 @@ class IntakesController < ApplicationController
     Intake.where(user_id: user_id).today
   end
 
-  def show_stats
+  def show_todays_stats
     flavor = Flavor.find(flavor_id).name
-    text = "#{flavor.titleize} recorded. You have had #{total_today.count} #{"LaCroix".pluralize(total_today.count)} today. #{total_today.by_flavor(flavor_id).count} of them have been #{flavor}."
+    count = total_today.count
+    text = <<~TODAY
+      #{flavor.titleize} recorded. You have had #{count} #{'LaCroix'.pluralize(count)} today.
+      #{total_today.by_flavor(flavor_id).count} of them have been #{flavor}.
+    TODAY
+    slack_message = ::Slack.new(text: text)
+
+    render json: slack_message.to_json, status: 200
+  end
+
+  def show_this_weeks_stats
+    count = get_total_count_for_past_seven_days.count
+    text = "You have had #{count} #{'LaCroix'.pluralize(count)} today."
     slack_message = ::Slack.new(text: text)
 
     render json: slack_message.to_json, status: 200
