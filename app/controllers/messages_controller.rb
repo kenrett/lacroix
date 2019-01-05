@@ -14,9 +14,9 @@ class MessagesController < ApplicationController
 
   def index
     p "*" * 100
-    p params
+    p params['text']
     p "*" * 100
-    case params.to_s.downcase.strip
+    case params['text'].to_s.downcase.strip
     when 'help', '' then HELP_RESPONSE
     when 'add'
       record_a_drink
