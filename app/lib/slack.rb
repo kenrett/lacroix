@@ -38,7 +38,7 @@ class Slack
 
   # simple post to the Slack LaCroix Bot DM channel (aka "App DM").
   # Pass an encoded Slack user_id (e.g. U12345) and an encoded Slack team_id (e.g. T1245)
-  # The given user must already have gone through the OAuth flow and stored a bot token in our side first.
+  # The given workspace must already have gone through the OAuth flow and stored a bot token in our side first.
   # You can do this by going to /provision and authorizing the app on your workspace
   #
   # For example, here is a simple call to this method
@@ -47,12 +47,14 @@ class Slack
   #
   def post_to_bot_dm(slack_user_id, slack_team_id)
     # this will raise a ActiveRecord::RecordNotFound exception if the Auth data can't be found
-    auth = Auth.find([slack_user_id, slack_team_id])
+    auth = Auth.where(team_id: slack_team_id).first
+    raise ArgumentError.new('No authorizations found for this workspace. Please go through the /provision flow first') if auth.nil?
+
     body = get_slack_args
-    body[:channel] = auth.user_id
+    body[:channel] = slack_user_id
     body[:as_user] = true
 
-    call_slack_api_json(body, auth.bot_access_token)
+    call_slack_api_json('chat.postMessage', body, auth.bot_access_token)
   end
 
   private
@@ -60,14 +62,14 @@ class Slack
   # Centralized location to call the Slack API with a JSON payload.
   # - `body` is a hash of arguments that will be formatted as JSON
   # - `access_token` is a Slack token that will be passed as an HTTP header bearer token to Slack
-  def call_slack_api_json(body = {}, access_token)
+  def call_slack_api_json(api_method, body = {}, access_token)
     conn = Faraday.new(:url => 'https://slack.com/api/') do |c|
       c.adapter  Faraday.default_adapter  # make requests with Net::HTTP
     end
     conn.response :logger if Rails.env.development?
 
     conn.post do |req|
-      req.url 'chat.postMessage'
+      req.url api_method
       req.headers['Content-Type'] = 'application/json'
       req.headers['Authorization'] = "Bearer #{access_token}"
       req.body = body.to_json
