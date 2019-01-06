@@ -4,15 +4,12 @@ require 'json'
 class Slack
   attr_accessor :request, :channel, :text, :username, :icon_url, :params, :attachments
 
-  # TODO don't hard code an incoming webhook here, use OAuth app distrubtion
-  WEBHOOK_LA_CROIX_TEST = "BF5154EG6/RT62CQWxF76gBxU21kmCxIcX" #la-croix-testin channel
-
   def initialize(opts = {})
     # Default Slack channel based on environment.
-    @webhook = opts.fetch(:webhook, WEBHOOK_LA_CROIX_TEST)
     @text = opts.fetch(:text, 'Testing!')
     @action_text = opts.fetch(:action_text, 'Choose an action')
     @actions = opts.fetch(:actions, [])
+    @attachments = []
     @callback_id = opts.fetch(:callback_id, 'lacroix')
 
     # format attachments
@@ -39,27 +36,42 @@ class Slack
     }
   end
 
-  # post the message directly to the Slack API
-  def post_message
-    params = {
-      text: @text,
-    }
-    params[:attachments] = @attachments if !@attachments.empty?
-    params = params.to_json
+  # simple post to the Slack LaCroix Bot DM channel (aka "App DM").
+  # Pass an encoded Slack user_id (e.g. U12345) and an encoded Slack team_id (e.g. T1245)
+  # The given user must already have gone through the OAuth flow and stored a bot token in our side first.
+  # You can do this by going to /provision and authorizing the app on your workspace
+  #
+  # For example, here is a simple call to this method
+  #     slack = Slack.new({text: "Hi there good sir"})
+  #     slack.post_to_bot_dm('U04GFUB4R', 'T04GF0BAF')
+  #
+  def post_to_bot_dm(slack_user_id, slack_team_id)
+    # this will raise a ActiveRecord::RecordNotFound exception if the Auth data can't be found
+    auth = Auth.find([slack_user_id, slack_team_id])
+    body = get_slack_args
+    body[:channel] = auth.user_id
+    body[:as_user] = true
 
-    #setup Faraday connection to call Slack API
-    #TODO don't hard code an incoming webhook here, use OAuth app distrubtion
-    request = Faraday.new(:url => 'https://hooks.slack.com/services/T04GF0BAF/') do |c|
-      #c.request  :json
-      c.response :logger                  # log requests to STDOUT
-      #c.response :json                   # form response as JSON (otherwise it will be a string)
+    call_slack_api_json(body, auth.bot_access_token)
+  end
+
+  private
+
+  # Centralized location to call the Slack API with a JSON payload.
+  # - `body` is a hash of arguments that will be formatted as JSON
+  # - `access_token` is a Slack token that will be passed as an HTTP header bearer token to Slack
+  def call_slack_api_json(body = {}, access_token)
+    conn = Faraday.new(:url => 'https://slack.com/api/') do |c|
       c.adapter  Faraday.default_adapter  # make requests with Net::HTTP
     end
+    conn.response :logger if Rails.env.development?
 
-    request.post do |req|
-      req.url @webhook
+    conn.post do |req|
+      req.url 'chat.postMessage'
       req.headers['Content-Type'] = 'application/json'
-      req.body = params
+      req.headers['Authorization'] = "Bearer #{access_token}"
+      req.body = body.to_json
     end
   end
+
 end
