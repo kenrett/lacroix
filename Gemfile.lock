@@ -55,6 +55,8 @@ GEM
     erubi (1.8.0)
     faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
+    faraday_middleware (0.12.2)
+      faraday (>= 0.7.4, < 1.0)
     ffi (1.9.25)
     globalid (0.4.1)
       activesupport (>= 4.2.0)
@@ -149,7 +151,9 @@ DEPENDENCIES
   byebug
   composite_primary_keys (= 11.1.0)
   faraday (>= 0.15.4)
+  faraday_middleware
   listen (>= 3.0.5, < 3.2)
+  mimemagic
   pg (>= 0.18, < 2.0)
   pry-byebug
   puma (~> 3.11)
