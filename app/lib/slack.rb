@@ -35,7 +35,7 @@ class Slack
     @attachments = []
     @filepath = opts.fetch(:filepath, nil)
     @callback_id = opts.fetch(:callback_id, 'lacroix')
-
+binding.pry
     # format attachments
     if @actions.any?
       p "*" * 20
