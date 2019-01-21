@@ -38,8 +38,11 @@ class Slack
 
     # format attachments
     if @actions.any?
+      p "*" * 20
+      p @actions
+      p "*" * 20
       attachments = []
-      @actions.each_slice(5) do |a|
+      @actions.each_slice(1) do |a|
         attachments << {
           color: '#3AA3E3',
           text: '',
