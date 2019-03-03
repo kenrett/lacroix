@@ -81,6 +81,8 @@ class MessagesController < ApplicationController
 
   def undo
     intake = Intake.where("user_id = ? AND created_at < ? ", @user_id, Time.now).order("created_at DESC").first
+    render_to_slack(text: "We found no history for you. Do you even bubble bro?") if intake.nil?
+
     flavor = Flavor.find(intake.flavor_id)
     Intake.find(intake.id).destroy
     render_to_slack(text: "Your most recent drink was a #{flavor.name}. We deleted it - it's like it never happened. :poop:")
