@@ -6,6 +6,7 @@ class MessagesController < ApplicationController
     `week` displays your stats for the week
     `alltime` displays your lifetime stats
     `hero` displays your team's leaderboard
+    `undo` undoes your last bubbly delight
     Example: `/lacroix add`
   HELP
   INVALID_RESPONSE = <<~INVALID.freeze
@@ -21,6 +22,7 @@ class MessagesController < ApplicationController
     when 'week' then week_stats
     when 'alltime' then alltime_stats
     when 'hero' then leaderboard
+    when 'undo' then undo
     else render_to_slack(text: INVALID_RESPONSE)
     end
   end
@@ -75,6 +77,13 @@ class MessagesController < ApplicationController
 
   def leaderboard
     render_to_slack(text: 'This has not been implemented yet.')
+  end
+
+  def undo
+    intake = Intake.where("user_id = ? AND created_at < ? ", @user_id, Time.now).order("created_at DESC").first
+    flavor = Flavor.find(intake.flavor_id)
+    Intake.find(intake.id).destroy
+    render_to_slack(text: "Your most recent drink was a #{flavor.name}. We deleted it - it's like it never happened. :poop:")
   end
 
   def render_to_slack(args)
